@@ -1,5 +1,7 @@
 # A global continuum of river hydrodynamic regimes — analysis code
 
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.22297492.svg)](https://doi.org/10.5281/zenodo.22297492)
+
 Analysis code for the manuscript **"A global continuum of river hydrodynamic regimes"**
 (Qihua Ran, Hohai University). The study uses 3.4 years of SWOT (Surface Water and
 Ocean Topography) observations over 97,566 quality-controlled river reaches to build
@@ -81,7 +83,10 @@ absolute paths are required. Input data are not shipped — see `data/README.md`
 
 ## Citation
 
-If you use this code, please cite the manuscript (see `CITATION.cff`).
+Ran, Q. (2026). *A global continuum of river hydrodynamic regimes — analysis code* (v1.0.0).
+Zenodo. https://doi.org/10.5281/zenodo.22297492
+
+If you use this code, please also cite the manuscript (see `CITATION.cff`).
 
 ## License
 
