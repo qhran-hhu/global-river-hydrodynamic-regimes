@@ -44,7 +44,7 @@ GROUPS = {"气候": ["bio1_年均温", "bio4_温度季节性", "bio12_年降水"
 def step_climate():
     import rasterio
 
-    pc = pd.read_parquet(OUT / "格局图数据.parquet")
+    pc = pd.read_parquet(OUT / "regime_map_data.parquet")
     coords = list(zip(pc.x.values, pc.y.values))
     out = pc[["PC1", "PC2", "PC3", "f5_gated", "dam"]].copy()
     out["abs_lat"] = pc.y.abs()
@@ -57,11 +57,11 @@ def step_climate():
         v[v < -9999] = np.nan
         out[name] = v
         print(name, "NaN%", round(out[name].isna().mean() * 100, 2))
-    full = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet",
+    full = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet",
                            columns=["f6_slope"])
     out["slope"] = full.f6_slope
-    out.to_parquet(OUT / "驱动因子数据.parquet")
-    print("saved", OUT / "驱动因子数据.parquet", out.shape)
+    out.to_parquet(OUT / "driver_data.parquet")
+    print("saved", OUT / "driver_data.parquet", out.shape)
 
 
 def step_model():
@@ -71,7 +71,7 @@ def step_model():
     from sklearn.metrics import r2_score, roc_auc_score
     from sklearn.model_selection import train_test_split
 
-    d = pd.read_parquet(OUT / "驱动因子数据.parquet")
+    d = pd.read_parquet(OUT / "driver_data.parquet")
     feats = sum(GROUPS.values(), [])
     rng = np.random.default_rng(0)
     sub = rng.choice(len(d), 50_000, replace=False)
@@ -125,9 +125,9 @@ def step_model():
             imp_rows.append(dict(target=target, var=f_, imp=float(v_)))
 
     imp = pd.DataFrame(imp_rows)
-    json.dump(res, open(OUT / "驱动归因_r2.json", "w"),
+    json.dump(res, open(OUT / "driver_attribution_r2.json", "w"),
               ensure_ascii=False, indent=1)
-    imp.to_csv(OUT / "驱动归因_置换重要性.csv", index=False,
+    imp.to_csv(OUT / "driver_attribution_permutation_importance.csv", index=False,
                encoding="utf-8-sig")
 
     # ---------- 图 ----------
@@ -211,8 +211,8 @@ def step_model():
     fig.suptitle("驱动因子归因：气候 / 地形 / 人类活动对全球水动力 "
                  "regime 的解释力（n=50,000 子样本）", fontsize=13)
     fig.tight_layout(rect=[0, 0, 1, 0.96])
-    fig.savefig(OUT / "驱动归因.png", bbox_inches="tight", dpi=150)
-    print(f"输出 -> {OUT / '驱动归因.png'}")
+    fig.savefig(OUT / "driver_attribution.png", bbox_inches="tight", dpi=150)
+    print(f"输出 -> {OUT / 'driver_attribution.png'}")
 
 
 if __name__ == "__main__":

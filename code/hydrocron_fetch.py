@@ -8,9 +8,9 @@
 
 用法：
     # W1 速率限制试拉（1,000 reach）
-    python hydrocron_fetch.py --reaches 全球reach清单.csv --limit 1000
+    python hydrocron_fetch.py --reaches global_reach_list.csv --limit 1000
     # 全球全量（断点续传，中断后再次运行自动跳过已完成 reach）
-    python hydrocron_fetch.py --reaches 全球reach清单.csv --workers 10
+    python hydrocron_fetch.py --reaches global_reach_list.csv --workers 10
 
 输入：reach 清单 CSV，至少一列 reach_id。
 输出：output/ts_shards/shard_00000.parquet ...（每 shard 2,000 个 reach）

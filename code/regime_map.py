@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""全球水动力格局图：把 regime 连续谱映射回地理空间
+"""global_hydrodynamic_regime_map：把 regime 连续谱映射回地理空间
 
 每个 reach 的 PC1/PC2/PC3 秩次 → RGB 三色合成（相似 regime = 相似颜色）。
 图版：
@@ -7,7 +7,7 @@
   (b) PC1-PC2 regime 空间（同配色，即图例）
   (c) "弱/无年循环"宏区（f5 门控）地理分布
   (d) PC1-PC3 载荷（颜色的物理含义）
-输出: output/regime_space/全球水动力格局图.png, 格局图数据.parquet
+输出: output/regime_space/global_hydrodynamic_regime_map.png, regime_map_data.parquet
 """
 import sys
 from pathlib import Path
@@ -76,10 +76,10 @@ def main():
     pc[["continent", "x", "y"]] = meta[["continent", "x", "y"]]
 
     # f5 弱年循环（R²<0.3）与大坝标记
-    full = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet",
+    full = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet",
                            columns=["f5_r2"])
     pc["f5_gated"] = (full.f5_r2 < 0.3) | full.f5_r2.isna()
-    dam = pd.read_csv(BASE / "output" / "human_activity" / "大坝_reach匹配.csv",
+    dam = pd.read_csv(BASE / "output" / "human_activity" / "dam_reach_matches.csv",
                       encoding="utf-8-sig", low_memory=False)
     pc["dam"] = pc.index.isin(
         set(dam.loc[dam.qc_pass == True, "reach_id"]))
@@ -88,7 +88,7 @@ def main():
     xs, ys = robinson(pc.x.values, pc.y.values)
     pc["rx"], pc["ry"] = xs, ys
     pc[["R", "G", "B"]] = rgb
-    pc.to_parquet(OUT / "格局图数据.parquet")
+    pc.to_parquet(OUT / "regime_map_data.parquet")
 
     # 分洲概况
     print("=== 分洲：f5 门控占比 / PC 中位 ===")
@@ -139,8 +139,8 @@ def main():
     ax.set_title("(d) PC 载荷：颜色的物理含义", fontsize=11)
 
     fig.tight_layout()
-    fig.savefig(OUT / "全球水动力格局图.png", bbox_inches="tight", dpi=200)
-    print(f"输出 -> {OUT / '全球水动力格局图.png'}")
+    fig.savefig(OUT / "global_hydrodynamic_regime_map.png", bbox_inches="tight", dpi=200)
+    print(f"输出 -> {OUT / 'global_hydrodynamic_regime_map.png'}")
 
 
 if __name__ == "__main__":

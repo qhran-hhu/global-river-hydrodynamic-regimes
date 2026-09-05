@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """Figure 4 出版级：人类指纹——大坝改变水动力，但沿谱位移而非出谱。
 
-(a) 三峡指纹：四特征建坝后变化随距坝里程（长江六站实测）
+(a) tgd_fingerprint：四特征建坝后变化随距坝里程（长江六站实测）
 (b) 三峡季节相位移动（建坝后峰值月 − 建坝前，负=提前）
 (c) GDAT 全球坝邻近 reach 特征对比（坝邻近 vs 对照中位相对差）
 (d) 坝邻近 reach 在 HDBSCAN 各簇的占比 vs 基线 5.4%（无大坝 regime 岛）
@@ -40,10 +40,10 @@ def panel_label(ax, s):
 
 
 def main():
-    tgd = pd.read_csv(DAM / "三峡指纹_特征位移.csv", encoding="utf-8-sig")
+    tgd = pd.read_csv(DAM / "tgd_fingerprint_displacement.csv", encoding="utf-8-sig")
     tgd["station_en"] = tgd.station.map(STATION_EN)
-    gdat = pd.read_csv(DAM / "大坝对照_特征差异.csv", encoding="utf-8-sig")
-    blob = pd.read_csv(OUT / "团块成分剖析.csv", encoding="utf-8-sig")
+    gdat = pd.read_csv(DAM / "dam_contrast_feature_diff.csv", encoding="utf-8-sig")
+    blob = pd.read_csv(OUT / "cluster_composition.csv", encoding="utf-8-sig")
 
     fig, axes = plt.subplots(2, 2, figsize=(9.6, 7.2))
     fig.subplots_adjust(hspace=0.46, wspace=0.30,
@@ -103,7 +103,7 @@ def main():
     ax = axes[1, 0]
     labels = ["WSE relative\nrange (f2)", "width event\nresponse (f3)",
               "IQR(log$_{10}$H)\n(f4)"]
-    g3 = pd.read_csv(DAM / "大坝对照_坡度匹配.csv", encoding="utf-8-sig")
+    g3 = pd.read_csv(DAM / "dam_contrast_slope_matched.csv", encoding="utf-8-sig")
     arms = [("arm1 原匹配(洲+纬度)", "climate-latitude match\n(naive)",
              "#e8a33d", "//"),
             ("arm2 坡度匹配(洲+纬度+坡度)", "+ slope matched",

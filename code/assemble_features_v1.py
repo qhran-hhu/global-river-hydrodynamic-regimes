@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """汇总 features_v1_parts → 特征矩阵 v1（含 f1 秩次、f7 耦合、元数据、QC 标记）。
 
-输出：output/特征矩阵_v1.parquet + QC 后 _qc.parquet
+输出：output/feature_matrix_v1.parquet + QC 后 _qc.parquet
 QC 规则（方案 §5）：ice_clim_f > 0.2 或 dark_frac 高（>0.5）剔除；
 -999 填充视为未知，不剔除；f1–f7 关键特征缺失剔除（在 cluster 端处理）。
 """
@@ -11,7 +11,7 @@ from pathlib import Path
 
 BASE = Path(__file__).resolve().parent
 PARTS = BASE / "output" / "features_v1_parts"
-META_CSV = BASE / "output" / "全球reach清单.csv"
+META_CSV = BASE / "output" / "global_reach_list.csv"
 OUT = BASE / "output"
 
 fm = pd.concat([pd.read_parquet(f) for f in sorted(PARTS.glob("part_*.parquet"))],
@@ -30,7 +30,7 @@ meta = pd.read_csv(META_CSV, usecols=["reach_id", "continent", "x", "y",
                                       "ice_clim_f", "dark_frac",
                                       "has_validation"]).set_index("reach_id")
 fm = fm.join(meta)
-fm.to_parquet(OUT / "特征矩阵_v1.parquet")
+fm.to_parquet(OUT / "feature_matrix_v1.parquet")
 print(f"合并元数据后：{fm.shape}")
 
 # QC
@@ -39,7 +39,7 @@ def bad(flag, thr):
 
 qc = fm[~bad(fm.ice_clim_f, 0.2) & ~bad(fm.dark_frac, 0.5)]
 qc = qc[qc.f1_level_rank.notna() & qc.f2_rel_range.notna()]
-qc.to_parquet(OUT / "特征矩阵_v1_qc.parquet")
+qc.to_parquet(OUT / "feature_matrix_v1_qc.parquet")
 print(f"QC 后：{len(qc)}（剔除 {len(fm)-len(qc)}：冰雪/暗像素/特征缺失）")
 print("\n分洲分布：")
 print(qc.continent.value_counts().to_string())

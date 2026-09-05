@@ -7,7 +7,7 @@
   分别重算 f2/f3/f4/f5，跨 reach 检验半段间一致性 + 半段 vs 全记录一致性。
 
 输出：
-  output/regime_space/D2_快照保真度.txt   （汇总，人读）
+  output/regime_space/D2_snapshot_fidelity.txt   （汇总，人读）
   output/regime_space/D2_gsim_windows.csv （窗口级明细）
   output/regime_space/D2_swot_halves.parquet
 """
@@ -23,7 +23,7 @@ from scipy.stats import spearmanr
 BASE = Path(__file__).resolve().parent
 SHARDS = BASE / "output" / "ts_shards_global"
 GSIM = BASE / "output" / "regime_space" / "gsim"
-MAT = BASE / "output" / "特征矩阵_v1_qc.parquet"
+MAT = BASE / "output" / "feature_matrix_v1_qc.parquet"
 OUT = BASE / "output" / "regime_space"
 MIN_OBS = 12          # 半段/窗口最少观测数
 WIN_M = 41            # 3.4 年 ≈ 41 个月
@@ -262,7 +262,7 @@ def main():
     args = ap.parse_args()
     if args.arm == "a":
         rep = ["D2 短记录保真度检验（2026-09-03）", ""] + arm_a()
-        (OUT / "D2_快照保真度.txt").write_text("\n".join(rep),
+        (OUT / "D2_snapshot_fidelity.txt").write_text("\n".join(rep),
                                                encoding="utf-8")
         print("\n" + "\n".join(rep))
     elif args.arm == "b":
@@ -270,14 +270,14 @@ def main():
         arm_b(args.s0, args.s1, tag)
     elif args.arm == "report":
         txt = "\n".join(report_b())
-        (OUT / "D2_臂B汇总.txt").write_text(txt, encoding="utf-8")
+        (OUT / "D2_armB_summary.txt").write_text(txt, encoding="utf-8")
         print("\n" + txt)
     else:
         rep = ["D2 短记录保真度检验（2026-09-03）", ""]
         rep += arm_a()
         rep += report_b(arm_b())
         txt = "\n".join(rep)
-        (OUT / "D2_快照保真度.txt").write_text(txt, encoding="utf-8")
+        (OUT / "D2_snapshot_fidelity.txt").write_text(txt, encoding="utf-8")
         print("\n" + txt)
 
 

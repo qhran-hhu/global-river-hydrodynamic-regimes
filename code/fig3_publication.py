@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""Figure 3 出版级：驱动归因——循环性校正后，气候（而非地形）组织连续谱、人类≈0。
+"""Figure 3 出版级：driver_attribution——循环性校正后，气候（而非地形）组织连续谱、人类≈0。
 
 (a) 分组条：各驱动组单独 R²，全特征集（地形部分循环）vs 无坡度特征集（坡度外生）
 (b) 单变量置换重要性（7 预测因子 × 3 PC）
@@ -47,9 +47,9 @@ def panel_label(ax, s):
 
 
 def main():
-    r2 = json.loads((OUT / "驱动归因_r2.json").read_text(encoding="gbk"))
-    imp = pd.read_csv(OUT / "驱动归因_置换重要性.csv", encoding="utf-8-sig")
-    drv = pd.read_parquet(OUT / "驱动因子数据.parquet")
+    r2 = json.loads((OUT / "driver_attribution_r2.json").read_text(encoding="gbk"))
+    imp = pd.read_csv(OUT / "driver_attribution_permutation_importance.csv", encoding="utf-8-sig")
+    drv = pd.read_parquet(OUT / "driver_data.parquet")
 
     fig, axes = plt.subplots(2, 2, figsize=(9.6, 7.2))
     fig.subplots_adjust(hspace=0.55, wspace=0.30,
@@ -58,7 +58,7 @@ def main():
     # (a) 分组条：各驱动组单独 R²，全特征集（地形部分循环）vs 无坡度特征集（坡度外生）
     ax = axes[0, 0]
     pcs = ["PC1", "PC2", "PC3"]
-    r2_ns = pd.read_csv(OUT / "noslope归因_r2.csv", encoding="utf-8-sig")
+    r2_ns = pd.read_csv(OUT / "noslope_attribution_r2.csv", encoding="utf-8-sig")
 
     def g_full(p, tag):
         return r2[p]["r2"][tag]
@@ -177,7 +177,7 @@ def main():
     panel_label(ax, "d")
 
     for ext in ("png", "pdf"):
-        p = OUT / f"Fig3_驱动归因_出版级.{ext}"
+        p = OUT / f"Fig3_driver_attribution_出版级.{ext}"
         fig.savefig(p, dpi=300 if ext == "png" else None,
                     facecolor="white")
         print("saved:", p)

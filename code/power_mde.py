@@ -9,7 +9,7 @@
     可检出的最小 f2 位移（原始与 log10 口径，对照中位数相对量）。
     → 检验观测到的 −52.7% 是否远超功效极限（是则"清晰可见"断言成立）。
 
-输出：output/human_activity/功效分析_MDE.csv + 控制台汇总
+输出：output/human_activity/power_analysis_MDE.csv + 控制台汇总
   python power_mde.py
 """
 from pathlib import Path
@@ -30,8 +30,8 @@ def load_sets():
     import shapefile
     from scipy.spatial import cKDTree
 
-    fm_full = pd.read_parquet(BASE / "output" / "特征矩阵_v1.parquet")
-    fm = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    fm_full = pd.read_parquet(BASE / "output" / "feature_matrix_v1.parquet")
+    fm = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     sf = shapefile.Reader(str(OUT / "GDAT" / "GDAT_data_v1" / "data"
                               / "GDAT_v1_dams.shp"))
     fields = [f[0] for f in sf.fields[1:]]
@@ -87,7 +87,7 @@ def mde_enrich(n, p0, alpha=0.05, power=0.80):
 def main():
     dam, ctrl, dams, matched = load_sets()
     n1, n0 = len(dam), len(ctrl)
-    p0 = n1 / len(pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet"))
+    p0 = n1 / len(pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet"))
     print(f"坝邻近 n1={n1}, 对照 n0={n0}, 全样本基线坝占比 p0={p0*100:.2f}%")
 
     # ---- (1) 富集 MDE：按诊断子样本中观测到的区域规模 ----
@@ -140,8 +140,8 @@ def main():
           f"坝专属类型岛（坝占比>50% ≈ {0.5/p0:.0f}x 富集）"
           f"超出功效边界 {(0.5/p0)/isl:.0f} 倍 → 不可能漏检")
 
-    t.to_csv(OUT / "功效分析_MDE.csv", index=False, encoding="utf-8-sig")
-    print(f"输出 -> {OUT / '功效分析_MDE.csv'}")
+    t.to_csv(OUT / "power_analysis_MDE.csv", index=False, encoding="utf-8-sig")
+    print(f"输出 -> {OUT / 'power_analysis_MDE.csv'}")
 
 
 if __name__ == "__main__":

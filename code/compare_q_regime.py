@@ -71,7 +71,7 @@ def main():
                 (meta["frac.missing.days"] <= 0.2)].copy()
     print(f"站点: {len(meta)} -> 质量过滤后 {len(good)}")
 
-    full = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    full = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     tree = cKDTree(full[["x", "y"]].values)
     dist, idx = tree.query(good[["longitude", "latitude"]].values)
     good["reach_id"] = full.index.values[idx]
@@ -112,7 +112,7 @@ def main():
     r = full[["f2_rel_range", "f3_event_resp", "f4_iqr_logh", "f5_phase",
               "f5_r2", "f6_slope", "continent", "x", "y"]]
     m = m.join(r, on="reach_id")
-    m.to_csv(OUT / "gsim_流量水动力配对.csv", encoding="utf-8-sig")
+    m.to_csv(OUT / "gsim_discharge_hydrodynamic_pairs.csv", encoding="utf-8-sig")
     print(f"有效配对: {len(m)}")
 
     # ---------- 3. 对比分析 ----------
@@ -218,9 +218,9 @@ def main():
     fig.suptitle("流量 regime（GSIM 观测）× 水动力 regime（SWOT）："
                  "同一地点的双空间对比", fontsize=14)
     fig.tight_layout(rect=[0, 0, 1, 0.96])
-    fig.savefig(OUT / "流量水动力对比.png", bbox_inches="tight", dpi=150)
+    fig.savefig(OUT / "discharge_vs_hydrodynamic.png", bbox_inches="tight", dpi=150)
 
-    with open(OUT / "流量水动力对比_汇总.txt", "w", encoding="utf-8") as f:
+    with open(OUT / "discharge_vs_hydrodynamic_summary.txt", "w", encoding="utf-8") as f:
         f.write("流量 regime × 水动力 regime 对比汇总\n")
         f.write(f"站点质量过滤后 {len(good)}, 匹配 reach {len(matched)}, "
                 f"有效配对 {len(m)}\n")
@@ -235,7 +235,7 @@ def main():
         hot_r = spearmanr(hot.q_iqr, hot.f4_iqr_logh,
                           nan_policy="omit").statistic
         f.write(f"分组: 平缓 ρ={cold_r:.3f}, 陡峻 ρ={hot_r:.3f}\n")
-    print(f"输出 -> {OUT / '流量水动力对比.png'}")
+    print(f"输出 -> {OUT / 'discharge_vs_hydrodynamic.png'}")
 
 
 if __name__ == "__main__":

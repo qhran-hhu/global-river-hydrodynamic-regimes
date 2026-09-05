@@ -17,7 +17,7 @@ from scipy.spatial import cKDTree
 BASE = Path(__file__).resolve().parent
 PARTS = BASE / "output" / "features_v1_parts"
 SHARDS = BASE / "output" / "ts_shards_global"
-META = BASE / "output" / "全球reach清单.csv"
+META = BASE / "output" / "global_reach_list.csv"
 
 fm = pd.concat([pd.read_parquet(f) for f in sorted(PARTS.glob("part_*.parquet"))],
                ignore_index=True).set_index("reach_id")

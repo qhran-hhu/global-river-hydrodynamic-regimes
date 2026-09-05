@@ -8,7 +8,7 @@ Q ∝ w·h^(5/3)·S^0.5）得 WSE 对流量的转换增益 dlogh/dlogQ = 1/(β+5
 
 计算：逐 reach 对 log(width)~log(h_rel) 做 OLS（h_rel = wse - P5(wse)），
 要求 n≥30 且 h_rel 变程 >0.05 m（保证拟合可辨识）。
-输出：output/regime_space/R5_水力几何_beta.parquet（reach_id, beta, beta_r2,
+输出：output/regime_space/R5_hydraulic_geometry_beta.parquet（reach_id, beta, beta_r2,
       a, n, h_range, w_med, s_med）
 用法：python r5_hydraulic_geometry.py [--s0 N --s1 M --tag _partN_M]
       python r5_hydraulic_geometry.py --analyze   （合并+标度律检验）
@@ -80,19 +80,19 @@ def run(s0, s1, tag):
             print(f"  shard {i + 1}/{len(files)}, 已收 {len(recs)}", flush=True)
     R = pd.DataFrame(recs).T
     R.index.name = "reach_id"
-    R.to_parquet(OUT / f"R5_水力几何_beta{tag}.parquet")
+    R.to_parquet(OUT / f"R5_hydraulic_geometry_beta{tag}.parquet")
     print(f"有效 beta: {len(R)}", flush=True)
 
 
 def analyze():
     from scipy.stats import spearmanr
-    parts = sorted(OUT.glob("R5_水力几何_beta_part*.parquet"))
+    parts = sorted(OUT.glob("R5_hydraulic_geometry_beta_part*.parquet"))
     R = pd.concat([pd.read_parquet(p) for p in parts])
     R = R[~R.index.duplicated(keep="first")]
-    R.to_parquet(OUT / "R5_水力几何_beta.parquet")
+    R.to_parquet(OUT / "R5_hydraulic_geometry_beta.parquet")
     print(f"合并 {len(R)} reach 有 beta", flush=True)
 
-    qc = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    qc = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     qc = qc.reset_index()
     d = qc.merge(R, on="reach_id", how="inner")
     good = d[d.beta_r2 >= 0.3]  # 拟合质量过滤
@@ -114,7 +114,7 @@ def analyze():
                    f"(n={v.sum()})")
     rep.append("")
     # 标度律检验（GSIM 配对）：f2 ≈ q2/(β+5/3)？
-    g = pd.read_csv(OUT / "gsim_流量水动力配对.csv", encoding="utf-8-sig")
+    g = pd.read_csv(OUT / "gsim_discharge_hydrodynamic_pairs.csv", encoding="utf-8-sig")
     m = g.merge(R.reset_index()[["reach_id", "beta", "beta_r2"]],
                 on="reach_id", how="inner")
     m = m[m.beta_r2 >= 0.3]
@@ -126,13 +126,13 @@ def analyze():
     rep.append(f"f2 ~ q2（无形态校正）: ρ = {r_raw:+.3f}")
     rep.append(f"f2 ~ q2/(β+5/3)（标度律预测）: ρ = {r_law:+.3f}")
     # β 对 regime 坐标的解释力
-    pc = pd.read_parquet(OUT / "驱动因子数据.parquet").reset_index()
+    pc = pd.read_parquet(OUT / "driver_data.parquet").reset_index()
     dd = good.merge(pc[["reach_id", "PC1", "PC2", "PC3"]], on="reach_id")
     for c in ("PC1", "PC2", "PC3"):
         rep.append(f"β ~ {c}: ρ = "
                    f"{spearmanr(dd.beta, dd[c]).statistic:+.3f}")
     txt = "\n".join(rep)
-    (OUT / "R5_标度律.txt").write_text(txt, encoding="utf-8")
+    (OUT / "R5_scaling_law.txt").write_text(txt, encoding="utf-8")
     print("\n" + txt)
 
 

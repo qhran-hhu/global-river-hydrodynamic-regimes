@@ -1,10 +1,10 @@
 # -*- coding: utf-8 -*-
-"""A1 修补：三峡指纹净效应重算（意见书问题 1）。
+"""A1 修补：tgd_fingerprint净效应重算（意见书问题 1）。
 
 1. 逐年特征（稳健口径）+ 全期合并特征（复现旧口径 -21/-33/-76）
 2. 净坝效应 = 各站变化 − 朱沱（上游对照）变化
 3. 汉口站极端年排查：pre-dam 1976-1985 逐年 IQR(logH)，剔除最大年后重估
-输出：output/human_activity/三峡净效应重算.csv + 逐年诊断表
+输出：output/human_activity/tgd_net_effect_recompute.csv + 逐年诊断表
 """
 import sys
 from pathlib import Path
@@ -54,7 +54,7 @@ def main():
             f.update(station=st, period=per, year=yr, n=len(g))
             yearly.append(f)
     y = pd.DataFrame(yearly)
-    y.to_csv(OUT / "三峡净效应_逐年特征.csv", index=False,
+    y.to_csv(OUT / "tgd_net_effect_yearly.csv", index=False,
              encoding="utf-8-sig")
 
     # ---- 2. 两种口径的期别特征：全期合并 vs 逐年中位 ----
@@ -88,7 +88,7 @@ def main():
     for c in ["var_Z", "var_Q", "ev_Q", "iqr_H"]:
         for mode in ["pooled", "ymed"]:
             s[f"{c}_{mode}_net"] = s[f"{c}_{mode}_pct"] - ctrl[f"{c}_{mode}_pct"]
-    s.to_csv(OUT / "三峡净效应重算.csv", index=False, encoding="utf-8-sig")
+    s.to_csv(OUT / "tgd_net_effect_recompute.csv", index=False, encoding="utf-8-sig")
 
     # ---- 4. 汉口极端年排查 ----
     hk = y[(y.station == "汉口站") & (y.period == "pre-dam")].sort_values(

@@ -26,7 +26,7 @@ VAR_EXP = (34.7, 23.5, 16.4)  # PC1/2/3 解释方差 %（f2 深度相对修正�
 
 
 def load_data():
-    df = pd.read_parquet(OUT / "格局图数据.parquet")
+    df = pd.read_parquet(OUT / "regime_map_data.parquet")
     return df
 
 

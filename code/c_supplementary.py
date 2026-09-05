@@ -7,8 +7,8 @@ C1 QC 阈值敏感性：在全量矩阵（138,856 reach，QC 前）上变化
 C2 端元三亚组画像：弱年循环端（f5_r2<0.3）拆为冰冻影响 / 坝调控 /
    干旱事件型 / 其他过渡，与强季节端（R²>=0.6）对照画像。
 
-输出：output/regime_space/C1_QC阈值敏感性.csv
-      output/regime_space/C2_端元三亚组画像.csv
+输出：output/regime_space/C1_qc_threshold_sensitivity.csv
+      output/regime_space/C2_endmember_subgroups.csv
 """
 from pathlib import Path
 
@@ -17,8 +17,8 @@ import pandas as pd
 
 BASE = Path(__file__).resolve().parent
 OUT = BASE / "output" / "regime_space"
-MAT_FULL = BASE / "output" / "特征矩阵_v1.parquet"
-DRV = OUT / "驱动因子数据.parquet"
+MAT_FULL = BASE / "output" / "feature_matrix_v1.parquet"
+DRV = OUT / "driver_data.parquet"
 
 FEATS = ["f2_rel_range", "f3_event_resp", "f4_iqr_logh",
          "f6_slope", "f7_width_slope"]
@@ -93,12 +93,12 @@ def c1():
         print(f"  {lab}: n={r['n'] if r else 'NA'}", flush=True)
     R = pd.DataFrame(rows)[["variant", "n", "dip_pc1_p", "dip_pc2_p",
                             "gmm_k2_impr_pct"]]
-    R.to_csv(OUT / "C1_QC阈值敏感性.csv", index=False, encoding="utf-8-sig")
+    R.to_csv(OUT / "C1_qc_threshold_sensitivity.csv", index=False, encoding="utf-8-sig")
     print(R.to_string(index=False))
 
 
 def c2():
-    qc = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    qc = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     drv = pd.read_parquet(DRV).reset_index()
     if "reach_id" not in drv.columns:
         drv = drv.rename(columns={drv.columns[0]: "reach_id"})
@@ -134,7 +134,7 @@ def c2():
             前两大洲=" ".join(f"{k} {v * 100:.0f}%" for k, v in
                              cont.head(2).items())))
     R = pd.DataFrame(rows).sort_values("n", ascending=False)
-    R.to_csv(OUT / "C2_端元三亚组画像.csv", index=False, encoding="utf-8-sig")
+    R.to_csv(OUT / "C2_endmember_subgroups.csv", index=False, encoding="utf-8-sig")
     print(R.to_string(index=False))
 
 

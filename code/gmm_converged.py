@@ -82,7 +82,7 @@ def run_ablate():
         "nof4":    ["f2", "f3", "f5x", "f5y", "f6", "f7"],
         "noslope": ["f2", "f3", "f5x", "f5y"],
     }
-    d = pd.read_parquet(f"{BASE}/特征矩阵_v1_qc.parquet")
+    d = pd.read_parquet(f"{BASE}/feature_matrix_v1_qc.parquet")
     raw = raw_block(d)
     rows = []
     for tag, cols in {**VARIANTS}.items():

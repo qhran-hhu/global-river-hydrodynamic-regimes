@@ -40,7 +40,7 @@ def panel_label(ax, s, dx=-0.13):
 
 
 def main():
-    m = pd.read_csv(OUT / "gsim_流量水动力配对.csv", low_memory=False)
+    m = pd.read_csv(OUT / "gsim_discharge_hydrodynamic_pairs.csv", low_memory=False)
 
     fig = plt.figure(figsize=(11.4, 8.6))
     gs = fig.add_gridspec(2, 2, hspace=0.42, wspace=0.28,

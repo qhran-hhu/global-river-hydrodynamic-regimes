@@ -9,7 +9,7 @@
 (d) f5 门控阈值扫描 R²=0.1–0.5：门控率连续变化 + f5_r2 分布本身无自然断点。
 (e) HDBSCAN 直接在 PC 空间（不经 UMAP）：无稳定聚类。
 
-输出：output/regime_space/构造无关稳健性.csv
+输出：output/regime_space/construction_free_robustness.csv
   python modality_robustness.py
 """
 from pathlib import Path
@@ -40,7 +40,7 @@ def main():
     from scipy.ndimage import gaussian_filter, maximum_filter
     from sklearn.decomposition import PCA
 
-    d = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    d = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     rows = []
 
     # (a) 原始边缘分布单峰性（dip 单调不变）
@@ -125,9 +125,9 @@ def main():
     rows.append(dict(检验="PC空间HDBSCAN", dip=np.nan,
                      p中位=f"{n_clu}簇, 噪声{noise:.1f}%, 前3大{top}"))
 
-    pd.DataFrame(rows).to_csv(OUT / "构造无关稳健性.csv", index=False,
+    pd.DataFrame(rows).to_csv(OUT / "construction_free_robustness.csv", index=False,
                               encoding="utf-8-sig")
-    print(f"输出 -> {OUT / '构造无关稳健性.csv'}")
+    print(f"输出 -> {OUT / 'construction_free_robustness.csv'}")
 
 
 if __name__ == "__main__":

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""A4 大坝对照加坡度（意见书问题 4）：选址效应拆解
+"""A4 dam_contrast加坡度（意见书问题 4）：选址效应拆解
 
 坝址河流天然更陡、更靠上游，而坡度直接进入 f2/f4/f7 的自然基线——
 −52.7% 抑制里可能混入选址效应。三臂对比：
@@ -8,7 +8,7 @@
   arm3 回归标准化：对照池拟合 log10 f2 ~ log10 slope + |lat|（分洲），
        预测坝邻近 reach 的"自然期望值"，比较观测 vs 期望
 另输出选址诊断：坝邻近 vs 对照池坡度分布对比。
-输出：output/human_activity/大坝对照_坡度匹配.csv
+输出：output/human_activity/dam_contrast_slope_matched.csv
   python dam_contrast_slope.py
 """
 from pathlib import Path
@@ -31,8 +31,8 @@ def load_sets():
     import shapefile
     from scipy.spatial import cKDTree
 
-    fm_full = pd.read_parquet(BASE / "output" / "特征矩阵_v1.parquet")
-    fm_qc = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    fm_full = pd.read_parquet(BASE / "output" / "feature_matrix_v1.parquet")
+    fm_qc = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     qc_ids = set(fm_qc.index)
     sf = shapefile.Reader(str(OUT / "GDAT" / "GDAT_data_v1" / "data"
                               / "GDAT_v1_dams.shp"))
@@ -176,8 +176,8 @@ def main():
               f"p={ks.pvalue:.1e})", flush=True)
 
     t = pd.DataFrame(rows)
-    t.to_csv(OUT / "大坝对照_坡度匹配.csv", index=False, encoding="utf-8-sig")
-    print(f"输出 -> {OUT / '大坝对照_坡度匹配.csv'}")
+    t.to_csv(OUT / "dam_contrast_slope_matched.csv", index=False, encoding="utf-8-sig")
+    print(f"输出 -> {OUT / 'dam_contrast_slope_matched.csv'}")
 
 
 if __name__ == "__main__":

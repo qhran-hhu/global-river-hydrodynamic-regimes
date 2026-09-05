@@ -9,7 +9,7 @@
 臂 2（去衰减校正）：以 D2 半段相关为信度（Spearman-Brown 外推全记录），
   对流量-水动力耦合等关键相关做衰减校正。
 
-输出：output/regime_space/D3_噪声衰减.csv / .txt
+输出：output/regime_space/D3_noise_attenuation.csv / .txt
 """
 from pathlib import Path
 
@@ -19,7 +19,7 @@ from scipy.stats import spearmanr
 
 BASE = Path(__file__).resolve().parent
 SHARDS = BASE / "output" / "ts_shards_global"
-MAT = BASE / "output" / "特征矩阵_v1_qc.parquet"
+MAT = BASE / "output" / "feature_matrix_v1_qc.parquet"
 D2 = BASE / "output" / "regime_space" / "D2_swot_halves_part0_353.parquet"
 D2B = BASE / "output" / "regime_space" / "D2_swot_halves_part353_706.parquet"
 OUT = BASE / "output" / "regime_space"
@@ -163,7 +163,7 @@ def main():
             rows.append(row)
         print(f"情景 {si + 1}/3 完成", flush=True)
     R = pd.DataFrame(rows)
-    R.to_csv(OUT / "D3_噪声衰减.csv", index=False, encoding="utf-8-sig")
+    R.to_csv(OUT / "D3_noise_attenuation.csv", index=False, encoding="utf-8-sig")
 
     # 单峰性（坡度无关 5 特征，每情景用 rep0 + 原始）
     from sklearn.decomposition import PCA
@@ -223,7 +223,7 @@ def main():
            "=== 臂 1：噪声注入（2,000 分层 reach，每情景 5 重复中位） ===",
            agg.round(3).to_string()] + rep_lines
     out = "\n".join(txt)
-    (OUT / "D3_噪声衰减.txt").write_text(out, encoding="utf-8")
+    (OUT / "D3_noise_attenuation.txt").write_text(out, encoding="utf-8")
     print("\n" + out)
 
 

@@ -20,7 +20,7 @@ import pandas as pd
 
 BASE = Path(__file__).resolve().parent
 SHARDS = BASE / "output" / "ts_shards_global"
-META_CSV = BASE / "output" / "全球reach清单.csv"
+META_CSV = BASE / "output" / "global_reach_list.csv"
 PARTS = BASE / "output" / "features_v1_parts"
 MIN_OBS = 15
 RHO = 1000.0

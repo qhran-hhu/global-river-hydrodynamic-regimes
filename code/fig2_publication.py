@@ -30,7 +30,7 @@ plt.rcParams.update({
     "savefig.facecolor": "white", "axes.grid": False,
     "axes.edgecolor": "#444444", "axes.linewidth": 0.8, "font.size": 9})
 
-# 众数持续分析结果（源自 多峰性检验_汇总.txt，regime_space.py 实证输出）
+# 众数持续分析结果（源自 multimodality_summary.txt，regime_space.py 实证输出）
 MODE_PERSIST = [(0.5, 85), (1.0, 15), (1.5, 7), (2.0, 3), (3.0, 1),
                 (4.0, 1), (6.0, 1), (8.0, 1), (12.0, 1), (16.0, 1),
                 (24.0, 1)]
@@ -121,7 +121,7 @@ def main():
 
     fig.suptitle("")
     for ext in ("png", "pdf"):
-        p = OUT / f"Fig2_连续谱证据_出版级.{ext}"
+        p = OUT / f"Fig2_continuum_evidence_出版级.{ext}"
         fig.savefig(p, dpi=300 if ext == "png" else None,
                     facecolor="white")
         print("saved:", p)

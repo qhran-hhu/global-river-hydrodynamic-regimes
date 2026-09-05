@@ -2,7 +2,7 @@
 """从六洲 SoS 文件提取全球 reach 清单 + 流量均值参考表（W1 交付物）。
 
 输出（code/output/）：
-  全球reach清单.csv  —— reach_id, continent, x, y, river_name, observations,
+  global_reach_list.csv  —— reach_id, continent, x, y, river_name, observations,
                        momma_width/slope/Y/v/Qmean, metroman_allq, consensus_q,
                        hivdi_q, sad_q, sic4dvar_q_mm,
                        QC flags（ice_clim_f, dark_frac, low_slope_flag,
@@ -98,7 +98,7 @@ def main():
         print(f"{cc}: {len(df)} reaches, 有官方验证 {gauged}, "
               f"consensus_q 有效 {df.consensus_q.notna().sum()}")
     allr = pd.concat(frames, ignore_index=True)
-    p = OUT / "全球reach清单.csv"
+    p = OUT / "global_reach_list.csv"
     allr.to_csv(p, index=False, encoding="utf-8-sig")
     print(f"\n合计 {len(allr)} reaches -> {p}")
     print(f"有官方验证 reach 总数: {int(np.nansum(allr.has_validation))}")

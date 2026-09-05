@@ -42,14 +42,14 @@ def main():
     R = pd.DataFrame.from_dict(recs, orient="index",
                                columns=["f2_depth", "mean_h_rel"])
     R.index.name = "reach_id"
-    R.to_parquet(OUT / "f2_深度相对重算.parquet")
+    R.to_parquet(OUT / "f2_depth_relative_recompute.parquet")
     v = R.f2_depth.dropna()
     print(f"重算 {len(R)} reach，有效 {v.notna().sum()}")
     print(f"f2' 分布: 中位 {v.median():.3f}, IQR [{v.quantile(.25):.3f}, "
           f"{v.quantile(.75):.3f}], P95 {v.quantile(.95):.3f}")
 
     # 补丁两个矩阵
-    for name in ["特征矩阵_v1.parquet", "特征矩阵_v1_qc.parquet"]:
+    for name in ["feature_matrix_v1.parquet", "feature_matrix_v1_qc.parquet"]:
         mp = BASE / "output" / name
         m = pd.read_parquet(mp)
         if "reach_id" in m.columns:

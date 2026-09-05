@@ -4,7 +4,7 @@
 背景：build_features_v1.harmonic_one 对含 NaN 的 WSE 序列直接 lstsq，
 NaN 传播导致 38.5% reach 的 f5_* 全为 NaN（被当作"门控/事件主导"）。
 本脚本用 NaN 掩膜重算全部 reach 的 (phase, amp, r2)，输出：
-  output/regime_space/f5_掩膜重算.parquet  （reach_id, phase, amp, r2, n_eff）
+  output/regime_space/f5_masked_refit.parquet  （reach_id, phase, amp, r2, n_eff）
 并打印：新门控率（R²<0.3）、纬度型态、与旧矩阵对比。
   python f5_recompute_masked.py [--limit N]
 """
@@ -64,11 +64,11 @@ def main():
     t = pd.DataFrame([(r, *v) for r, v in recs.items()],
                      columns=["reach_id", "f5_phase_m", "f5_amp_m",
                               "f5_r2_m", "n_eff"]).set_index("reach_id")
-    t.to_parquet(OUT / "f5_掩膜重算.parquet")
-    print(f"保存 {OUT / 'f5_掩膜重算.parquet'}: {t.shape}")
+    t.to_parquet(OUT / "f5_masked_refit.parquet")
+    print(f"保存 {OUT / 'f5_masked_refit.parquet'}: {t.shape}")
 
     # ---- 与旧矩阵对比 ----
-    qc = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet",
+    qc = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet",
                          columns=["f5_r2", "f5_amp", "f5_phase", "y",
                                   "f2_rel_range", "n_obs"])
     m = qc.join(t, how="left")

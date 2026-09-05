@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """regime 空间主线：低维嵌入 + 多峰性检验（连续谱 vs 离散类的正式证据链）
 
-数据：output/特征矩阵_v1_qc.parquet（97,566 reach，QC 修复后）
+数据：output/feature_matrix_v1_qc.parquet（97,566 reach，QC 修复后）
 特征块（f2-f7 动力学特征，§8.4 决策：水平维度不参与）：
   f2_rel_range, f3_event_resp, f4_iqr_logh,
   f5 = log1p(amp)*(cos phase, sin phase)  —— 相位为圆周量，用振幅加权向量；
@@ -43,7 +43,7 @@ def build_block():
     """构造特征块并分位数正态变换，返回 (Xn, meta DataFrame)。"""
     from sklearn.preprocessing import QuantileTransformer
 
-    d = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    d = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     f5x = np.log1p(d.f5_amp.clip(lower=0)) * np.cos(d.f5_phase)
     f5y = np.log1p(d.f5_amp.clip(lower=0)) * np.sin(d.f5_phase)
     X = pd.DataFrame({
@@ -160,7 +160,7 @@ def step_umap():
     print(modes.to_string(index=False))
 
     # 大坝邻近 reach 叠加
-    dam = pd.read_csv(BASE / "output" / "human_activity" / "大坝_reach匹配.csv",
+    dam = pd.read_csv(BASE / "output" / "human_activity" / "dam_reach_matches.csv",
                       encoding="utf-8-sig")
     dam_ids = set(dam.loc[dam.qc_pass == True, "reach_id"])
     samp_dam = samp.index.isin(dam_ids)
@@ -169,7 +169,7 @@ def step_umap():
     # ---------- 汇总表 ----------
     pca_dip = json.load(open(OUT / "pca_dip.json"))
     bic = pd.read_csv(OUT / "gmm_bic.csv")
-    with open(OUT / "多峰性检验_汇总.txt", "w", encoding="utf-8") as f:
+    with open(OUT / "multimodality_summary.txt", "w", encoding="utf-8") as f:
         f.write("全球河流水动力 regime 空间：多峰性检验汇总\n")
         f.write(f"样本: {len(pc)} reach (QC 后), 特征块 f2-f7 (7 维分位数正态)\n\n")
         f.write(f"[1] PCA 方差贡献率: {np.round(pca_dip['explained'], 3).tolist()}\n")
@@ -235,10 +235,10 @@ def step_umap():
     ax.set_title("(f) 众数持续分析：平滑尺度 vs 众数")
     ax.axhline(1, color="gray", ls=":", lw=0.8)
 
-    fig.suptitle("全球河流水动力 regime 空间：连续谱证据链"
+    fig.suptitle("全球河流水动力 regime 空间：continuum_evidence链"
                  f"（n={len(pc):,} reach）", fontsize=14)
     fig.tight_layout(rect=[0, 0, 1, 0.96])
-    fig.savefig(OUT / "连续谱证据.png", bbox_inches="tight", dpi=150)
+    fig.savefig(OUT / "continuum_evidence.png", bbox_inches="tight", dpi=150)
     samp_out = samp.assign(hdb=lab)
     samp_out.to_parquet(OUT / "umap_sample.parquet")
     print(f"输出 -> {OUT}")
@@ -247,8 +247,8 @@ def step_umap():
 def step_blob():
     """剖析 UMAP/HDBSCAN 各团块的成分：是真 regime 岛还是数据/填补伪影。"""
     samp = pd.read_parquet(OUT / "umap_sample.parquet")
-    full = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
-    dam = pd.read_csv(BASE / "output" / "human_activity" / "大坝_reach匹配.csv",
+    full = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
+    dam = pd.read_csv(BASE / "output" / "human_activity" / "dam_reach_matches.csv",
                       encoding="utf-8-sig")
     dam_ids = set(dam.loc[dam.qc_pass == True, "reach_id"])
     m = samp.join(full[["n_obs", "f4_iqr_logh", "f6_slope", "f5_r2",
@@ -272,7 +272,7 @@ def step_blob():
         ))
     t = pd.DataFrame(rows).sort_values("n", ascending=False)
     print(t.to_string(index=False))
-    t.to_csv(OUT / "团块成分剖析.csv", index=False, encoding="utf-8-sig")
+    t.to_csv(OUT / "cluster_composition.csv", index=False, encoding="utf-8-sig")
 
     # 全样本 vs 各团块的坝密度富集倍数
     base = m.dam.mean()
@@ -294,7 +294,7 @@ def step_nof5():
     from sklearn.decomposition import PCA
     from sklearn.preprocessing import QuantileTransformer
 
-    d = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    d = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     X = pd.DataFrame({
         "f2": d.f2_rel_range.fillna(d.f2_rel_range.median()),
         "f3": d.f3_event_resp.fillna(d.f3_event_resp.median()),
@@ -326,7 +326,7 @@ def step_nof5():
 
 
 VARIANTS = {
-    # 特征剔除稳健性矩阵（意见书问题 2：f4/f7 均含坡度 S，坡度自由集只剩 f2/f3/f5）
+    # feature_ablation_robustness（意见书问题 2：f4/f7 均含坡度 S，坡度自由集只剩 f2/f3/f5）
     "nof5":    ["f2", "f3", "f4", "f6", "f7"],
     "nof4":    ["f2", "f3", "f5x", "f5y", "f6", "f7"],
     "noslope": ["f2", "f3", "f5x", "f5y"],
@@ -350,7 +350,7 @@ def _raw_block(d):
 
 
 def step_robust():
-    """特征剔除稳健性矩阵：nof5 / nof4 / noslope 三变体重跑
+    """feature_ablation_robustness：nof5 / nof4 / noslope 三变体重跑
     PCA + Hartigan 偶极 + GMM BIC(真实 vs 单峰参照) + 众数持续分析，
     并用 noslope PC 重估坡度归因 R²（此时坡度完全外生，检验循环性影响）。
       python regime_space.py robust   # ~10 min
@@ -361,7 +361,7 @@ def step_robust():
     from sklearn.mixture import GaussianMixture
     from sklearn.preprocessing import QuantileTransformer
 
-    d = pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    d = pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
     raw = _raw_block(d)
     rng = np.random.default_rng(RNG)
     rows, noslope_pc = [], None
@@ -497,14 +497,14 @@ def step_robust():
     print(f"众数: σ=[1,2,3,6,12] -> {cnts}", flush=True)
 
     t = pd.DataFrame(rows)
-    t.to_csv(OUT / "特征剔除稳健性矩阵.csv", index=False, encoding="utf-8-sig")
+    t.to_csv(OUT / "feature_ablation_robustness.csv", index=False, encoding="utf-8-sig")
 
     # ---- 坡度归因循环性检验：noslope PC 下坡度完全外生 ----
     from sklearn.ensemble import HistGradientBoostingRegressor
     from sklearn.metrics import r2_score
     from sklearn.model_selection import train_test_split
 
-    drv = pd.read_parquet(OUT / "驱动因子数据.parquet")
+    drv = pd.read_parquet(OUT / "driver_data.parquet")
     drv = drv.drop(columns=["PC1", "PC2", "PC3"]).join(noslope_pc)
     GROUPS_V = {"气候": ["bio1_年均温", "bio4_温度季节性",
                          "bio12_年降水", "bio15_降水季节性", "abs_lat"],
@@ -524,9 +524,9 @@ def step_robust():
             r2 = float(r2_score(y[te], m.predict(dd[cols].values[te])))
             ar.append(dict(target=tgt, subset=stag, r2=round(r2, 3)))
             print(f"noslope归因 {tgt} {stag}: R²={r2:.3f}", flush=True)
-    pd.DataFrame(ar).to_csv(OUT / "noslope归因_r2.csv", index=False,
+    pd.DataFrame(ar).to_csv(OUT / "noslope_attribution_r2.csv", index=False,
                             encoding="utf-8-sig")
-    print(f"输出 -> {OUT / '特征剔除稳健性矩阵.csv'}, noslope归因_r2.csv")
+    print(f"输出 -> {OUT / 'feature_ablation_robustness.csv'}, noslope_attribution_r2.csv")
 
 
 if __name__ == "__main__":

@@ -52,8 +52,8 @@ def load_dams():
 
 def main():
     dams = load_dams()
-    fm = pd.read_parquet(BASE / "output" / "特征矩阵_v1.parquet")
-    qc_ids = set(pd.read_parquet(BASE / "output" / "特征矩阵_v1_qc.parquet")
+    fm = pd.read_parquet(BASE / "output" / "feature_matrix_v1.parquet")
+    qc_ids = set(pd.read_parquet(BASE / "output" / "feature_matrix_v1_qc.parquet")
                  .index)
     print(f"特征矩阵：{len(fm)}；QC 通过：{len(qc_ids)}")
 
@@ -116,9 +116,9 @@ def main():
               f"({100*(a.median()-b.median())/abs(b.median()):+.1f}%, "
               f"KS p={ks.pvalue:.1e})")
     res = pd.DataFrame(results)
-    res.to_csv(OUT / "大坝对照_特征差异.csv", index=False,
+    res.to_csv(OUT / "dam_contrast_feature_diff.csv", index=False,
                encoding="utf-8-sig")
-    matched.to_csv(OUT / "大坝_reach匹配.csv", index=False,
+    matched.to_csv(OUT / "dam_reach_matches.csv", index=False,
                    encoding="utf-8-sig")
 
     # 图
@@ -139,7 +139,7 @@ def main():
         ax.legend(fontsize=8)
     fig.suptitle("GDAT 大坝邻近 reach vs 匹配对照（全球，QC 后）")
     fig.tight_layout()
-    fig.savefig(OUT / "大坝对照.png", bbox_inches="tight", dpi=150)
+    fig.savefig(OUT / "dam_contrast.png", bbox_inches="tight", dpi=150)
     print(f"\n输出 -> {OUT}")
 
 

@@ -74,12 +74,10 @@ absolute paths are required. Input data are not shipped — see `data/README.md`
 * The **derived reach-level feature matrix** (`特征矩阵_v1_qc.parquet`, 97,566 reaches)
   will be deposited on Zenodo with a DOI upon formal publication.
 
-## Known pre-release notes
+## Notes
 
-* Output *directory* names are anglicised (`output/human_activity/`,
-  `output/feature_matrix_v0/`); some output *file* labels remain in Chinese and
-  will be anglicised in the final release pass before Zenodo deposit.
 * `feature_matrix_v0.py` is the pilot-stage (369-reach) builder kept for provenance.
+* Chinese station names inside the Yangtze ground-truth scripts (`tgd_*.py`) are data keys matching the restricted source files — they are intentional.
 
 ## Citation
 

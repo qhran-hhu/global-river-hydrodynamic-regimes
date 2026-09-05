@@ -32,7 +32,7 @@ except Exception:
     plt.rcParams["axes.unicode_minus"] = False
 
 PILOT = BASE / "output" / "ts_shards_pilot"
-META = BASE / "output" / "全球reach清单.csv"
+META = BASE / "output" / "global_reach_list.csv"
 OUT = BASE / "output" / "feature_matrix_v0"
 OUT.mkdir(exist_ok=True)
 
@@ -73,7 +73,7 @@ def main():
     for c in ["f1_level_rank", "f2_rel_range", "f3_event_resp",
               "f4_iqr_logh", "f5_phase", "f6_slope", "f7_width_slope"]:
         print(f"  {c}: {fm[c].notna().mean()*100:.0f}%")
-    fm.to_csv(OUT / "特征矩阵_v0.csv", encoding="utf-8-sig")
+    fm.to_csv(OUT / "feature_matrix_v0.csv", encoding="utf-8-sig")
 
     # 4. 物理检查：峰值月份 vs 纬度（phase=0 对应 1 月 1 日峰值）
     #    只信 R²≥0.3 的相位（年循环信号弱的 reach 相位是噪声）
@@ -131,9 +131,9 @@ def main():
     ax.set_title(f"Ward 聚类（k={k}）全球分布（n={len(d)}）")
     plt.colorbar(sc, ax=ax, label="类")
     fig.tight_layout()
-    fig.savefig(OUT / "v0_物理检查与聚类.png", bbox_inches="tight", dpi=150)
+    fig.savefig(OUT / "v0_physical_check_clustering.png", bbox_inches="tight", dpi=150)
 
-    d.to_csv(OUT / "特征矩阵_v0_含聚类.csv", encoding="utf-8-sig")
+    d.to_csv(OUT / "feature_matrix_v0_clustered.csv", encoding="utf-8-sig")
     print("\n各类规模：", d.cluster.value_counts().sort_index().to_dict())
     print(f"\n输出目录：{OUT}")
 

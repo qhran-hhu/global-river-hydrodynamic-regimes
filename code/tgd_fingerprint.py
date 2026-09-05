@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-"""三峡指纹实验：TGD 在抗噪特征空间造成的位移（应对①）。
+"""tgd_fingerprint实验：TGD 在抗噪特征空间造成的位移（应对①）。
 
 数据：长江六站前后两时段逐日 Q/Z/A/H（yangtze_daily_hydrodynamics.csv）。
 特征（与全球 f2–f7 同构，用实测 Z 代替 SWOT WSE）：
@@ -92,7 +92,7 @@ def main():
     summary = summary.sort_values("dist_km")
     print("=== 建坝前后特征变化（%，post-pre 相对 pre）===")
     print(summary.round(1).to_string())
-    summary.to_csv(OUT / "三峡指纹_特征位移.csv", encoding="utf-8-sig")
+    summary.to_csv(OUT / "tgd_fingerprint_displacement.csv", encoding="utf-8-sig")
 
     # 相位变化（绝对月份）
     ph = d.pivot(index="station", columns="period", values="phase_month")
@@ -115,7 +115,7 @@ def main():
                 ha="center", va="bottom")
     ax.set_xlabel("距三峡大坝里程（km；负=上游库尾对照）")
     ax.set_ylabel("建坝后变化（%）")
-    ax.set_title("三峡指纹：特征位移随距坝里程的衰减")
+    ax.set_title("tgd_fingerprint：特征位移随距坝里程的衰减")
     ax.legend(fontsize=8)
 
     ax = axes[1]
@@ -132,7 +132,7 @@ def main():
     ax.set_title("季节相位移动")
     ax.legend(fontsize=8)
     fig.tight_layout()
-    fig.savefig(OUT / "三峡指纹.png", bbox_inches="tight", dpi=150)
+    fig.savefig(OUT / "tgd_fingerprint.png", bbox_inches="tight", dpi=150)
     print(f"\n输出 -> {OUT}")
 
 

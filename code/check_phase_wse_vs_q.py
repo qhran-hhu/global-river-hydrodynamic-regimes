@@ -5,7 +5,7 @@
 分别计算 SWOT WSE 相位与 USGS 逐日流量相位，比较峰值月份差。
 若 WSE 系统性领先 Q，则 v0 的"北半球偏早"是物理真实（水位先涨）而非缺陷。
 
-输出：code/output/feature_matrix_v0/相位对照_WSE_vs_Q.csv/png
+输出：code/output/feature_matrix_v0/phase_check_wse_vs_q.csv/png
 """
 import sys
 from pathlib import Path
@@ -37,7 +37,7 @@ def phase_of(dates, values):
 
 
 def main():
-    match = pd.read_csv(GS / "站点_reach匹配.csv")
+    match = pd.read_csv(GS / "station_reach_matches.csv")
     rows = []
     for _, r in match.iterrows():
         site = str(r.usgs_site).zfill(8)
@@ -65,7 +65,7 @@ def main():
         print(f"{r.station:32s} Q峰值 {m_q:4.1f}月(R²={r2_q:.2f})  "
               f"WSE峰值 {m_w:4.1f}月(R²={r2_w:.2f})  差 {dm:+.1f}月")
     df = pd.DataFrame(rows)
-    df.to_csv(OUT / "相位对照_WSE_vs_Q.csv", index=False,
+    df.to_csv(OUT / "phase_check_wse_vs_q.csv", index=False,
               encoding="utf-8-sig")
     good = df[(df.r2_Q >= 0.3) & (df.r2_WSE >= 0.3)]
     print(f"\n双 R²≥0.3 的 {len(good)} 站：WSE−Q 相位差中位 "
@@ -92,7 +92,7 @@ def main():
     ax.set_title("WSE 相位 vs 流量相位（10 北美站；红=双 R²≥0.3）")
     ax.legend(fontsize=8)
     fig.tight_layout()
-    fig.savefig(OUT / "相位对照_WSE_vs_Q.png", bbox_inches="tight", dpi=150)
+    fig.savefig(OUT / "phase_check_wse_vs_q.png", bbox_inches="tight", dpi=150)
     print(f"\n输出 -> {OUT}")
 
 

@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 """f5 修复：把掩膜重算的谐波列写回特征矩阵（备份旧列）。
 
-特征矩阵_v1.parquet / 特征矩阵_v1_qc.parquet 的
-f5_phase / f5_amp / f5_r2 ← output/regime_space/f5_掩膜重算.parquet
+feature_matrix_v1.parquet / feature_matrix_v1_qc.parquet 的
+f5_phase / f5_amp / f5_r2 ← output/regime_space/f5_masked_refit.parquet
 旧列保留为 f5_*_buggy（审计用）。
   python patch_f5_matrix.py
 """
@@ -13,12 +13,12 @@ import pandas as pd
 
 BASE = Path(__file__).resolve().parent
 OUT = BASE / "output"
-FIX = OUT / "regime_space" / "f5_掩膜重算.parquet"
+FIX = OUT / "regime_space" / "f5_masked_refit.parquet"
 
 fix = pd.read_parquet(FIX)
 print(f"修复表: {fix.shape}, r2 非NaN {fix.f5_r2_m.notna().sum()}")
 
-for name in ["特征矩阵_v1.parquet", "特征矩阵_v1_qc.parquet"]:
+for name in ["feature_matrix_v1.parquet", "feature_matrix_v1_qc.parquet"]:
     d = pd.read_parquet(OUT / name)
     for c in ["f5_phase", "f5_amp", "f5_r2"]:
         d[c + "_buggy"] = d[c]

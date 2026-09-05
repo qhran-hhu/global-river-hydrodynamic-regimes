@@ -155,7 +155,7 @@ def dual_path_ari(fm, reach_table, k=None, seed=0, n_max_ward=20000):
 if __name__ == "__main__":
     # 全量终检：特征矩阵 v1（QC 后 ~9 万 reach）
     OUT = BASE / "output"
-    fm = pd.read_parquet(OUT / "特征矩阵_v1_qc.parquet")
+    fm = pd.read_parquet(OUT / "feature_matrix_v1_qc.parquet")
     meta = fm.reset_index()[["reach_id", "consensus_q", "momma_q",
                              "metroman_q", "momma_width", "momma_depth"]]
     print(f"QC 后样本：{len(fm)}")
@@ -163,12 +163,12 @@ if __name__ == "__main__":
     X, idx = prepare_X(fm)
     ks = select_k(X)
     print(ks.round(1).to_string(index=False))
-    ks.to_csv(OUT / "v1_选k_BIC_bootstrap.csv", index=False,
+    ks.to_csv(OUT / "v1_kselect_BIC_bootstrap.csv", index=False,
               encoding="utf-8-sig")
     print("\n=== 双路径 ARI 终检（全球尺度）===")
     res = dual_path_ari(fm, meta)
     print(res)
-    pd.DataFrame([res]).to_csv(OUT / "v1_双路径ARI终检.csv", index=False,
+    pd.DataFrame([res]).to_csv(OUT / "v1_dualpath_ARI_final.csv", index=False,
                                encoding="utf-8-sig")
     verdict = ("通过（≥0.6）：特征工程锁定，进入阶段 2 勘探"
                if min(res["ari_ward"], res["ari_gmm"]) >= 0.6
